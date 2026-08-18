@@ -31,6 +31,11 @@ Omarchy bar-widget plugin. This checkout *is* the installed plugin
   refresh per change dropped the later ones while the first was in flight.
   Fetches now go through `settingsSettle` (a debounce) plus `refreshPending`;
   keep both.
+- After a *hot reload* (any file change under the plugin dir) the shell
+  re-injects the settings it read at shell startup, not the current
+  shell.json, so the widget can show a currency or coin list that was set and
+  reverted long ago. Not a plugin bug — a fresh `omarchy-restart-shell` or any
+  `omarchy bar set hegjon.coingecko …` puts it right. Do not chase it in QML.
 - Nerd Font codepoints: check `glyphnames.json` upstream rather than guessing
   from MDI names — several are off by one or more (`md-chart_line` is
   `f012a`, not `f0128`).
