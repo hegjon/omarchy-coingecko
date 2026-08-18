@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "hegjon.coingecko",
+  "name": "CoinGecko",
+  "version": "0.1.0",
+  "author": "Jonny Heggheim",
+  "license": "MIT",
+  "description": "Cryptocurrency prices from CoinGecko in the Omarchy bar: a live ticker for your favourite coin plus a popup with price, 1h/24h/7d change, market cap and rank for every coin you follow.",
+  "homepage": "https://github.com/hegjon/omarchy-coingecko",
+  "repository": "https://github.com/hegjon/omarchy-coingecko",
+  "keywords": [
+    "coingecko",
+    "crypto",
+    "cryptocurrency",
+    "bitcoin",
+    "ethereum",
+    "price",
+    "ticker"
+  ],
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "CoingeckoWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "CoinGecko",
+    "description": "Crypto price ticker and market overview from CoinGecko",
+    "category": "Information",
+    "allowMultiple": true,
+    "defaultSection": "right",
+    "defaults": {
+      "coins": "bitcoin,ethereum",
+      "currency": "usd",
+      "barDisplay": "First coin",
+      "showChangeInBar": true,
+      "compactPrices": true,
+      "refreshIntervalSec": 120,
+      "apiKey": ""
+    },
+    "schema": [
+      {
+        "key": "coins",
+        "type": "string",
+        "label": "Coins to follow",
+        "description": "Comma-separated CoinGecko coin ids, e.g. bitcoin,ethereum,solana. The first one is shown on the bar. Ids are in the URL of a coin's CoinGecko page.",
+        "defaultValue": "bitcoin,ethereum"
+      },
+      {
+        "key": "currency",
+        "type": "string",
+        "label": "Currency",
+        "description": "Quote currency code such as usd, eur, gbp, nok, jpy or btc.",
+        "defaultValue": "usd"
+      },
+      {
+        "key": "barDisplay",
+        "type": "enum",
+        "label": "What to show on the bar",
+        "options": ["First coin", "All coins", "Icon only"],
+        "defaultValue": "First coin"
+      },
+      {
+        "key": "showChangeInBar",
+        "type": "boolean",
+        "label": "Show 24h change on the bar",
+        "defaultValue": true
+      },
+      {
+        "key": "compactPrices",
+        "type": "boolean",
+        "label": "Abbreviate large prices on the bar (64.5k instead of 64,543)",
+        "defaultValue": true
+      },
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "description": "CoinGecko's free tier allows roughly 5-15 requests a minute and caches prices for about a minute, so anything under 60 s buys nothing.",
+        "min": 60,
+        "max": 3600,
+        "step": 30,
+        "defaultValue": 120
+      },
+      {
+        "key": "apiKey",
+        "type": "string",
+        "label": "CoinGecko Demo API key (optional)",
+        "description": "A free Demo key from coingecko.com/en/developers/dashboard raises the rate limit. Left empty, the public endpoint is used.",
+        "defaultValue": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+#!/bin/bash
+
+# Fetch market data for a list of coins from CoinGecko and print one normalized
+# JSON document on stdout for the widget.
+#
+#   coingecko-fetch [--coins ids] [--currency code]
+#
+# The optional Demo API key is read from $COINGECKO_API_KEY rather than argv so
+# it never shows up in `ps` or the journal.
+#
+# Success:  {"currency":"usd","fetchedAt":<epoch>,"coins":[...],"missing":[...]}
+# Failure:  {"error":"<human readable reason>"}   (exit status is still 0)
+#
+# Failing softly is deliberate: the widget always gets something it can render,
+# and a transient network problem shows up as a message in the panel instead
+# of an empty box.
+
+set -uo pipefail
+
+readonly API_BASE="https://api.coingecko.com/api/v3"
+readonly USER_AGENT="omarchy-coingecko/0.1.0 (+https://github.com/hegjon/omarchy-coingecko)"
+
+coins="bitcoin,ethereum"
+currency="usd"
+
+while (($#)); do
+  case $1 in
+    --coins) coins=${2:-}; shift 2 ;;
+    --currency) currency=${2:-}; shift 2 ;;
+    -h|--help)
+      sed -n '3,15p' "$0"; exit 0 ;;
+    *) echo "coingecko-fetch: unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
+
+fail() {
+  jq -cn --arg error "$1" '{error: $error}'
+  exit 0
+}
+
+for tool in curl jq; do
+  command -v "$tool" >/dev/null 2>&1 || fail "$tool is not installed"
+done
+
+# Normalise the coin list: lower-case, trimmed, de-duplicated, order kept.
+# CoinGecko ids are lower-case ASCII with dashes; anything else is dropped
+# rather than sent, so a stray character cannot turn into a URL surprise.
+mapfile -t ids < <(tr ',[:space:]' '\n\n' <<<"${coins,,}" | grep -E '^[a-z0-9-]+$' | awk '!seen[$0]++')
+((${#ids[@]})) || fail "No coins configured. Add CoinGecko ids such as bitcoin,ethereum."
+
+currency=${currency,,}
+currency=${currency//[^a-z0-9]/}
+[[ -n $currency ]] || fail "No currency configured."
+
+id_list=$(IFS=,; echo "${ids[*]}")
+
+curl_args=(
+  --silent --show-error
+  --max-time 15
+  --user-agent "$USER_AGENT"
+  --header "Accept: application/json"
+  --write-out '\n%{http_code}'
+)
+if [[ -n ${COINGECKO_API_KEY:-} ]]; then
+  curl_args+=(--header "x-cg-demo-api-key: ${COINGECKO_API_KEY}")
+fi
+
+url="${API_BASE}/coins/markets?vs_currency=${currency}&ids=${id_list}&order=market_cap_desc&per_page=250&sparkline=false&price_change_percentage=1h,24h,7d"
+
+curl_err=$(mktemp) || fail "Could not create a temporary file"
+trap 'rm -f "$curl_err"' EXIT
+
+response=$(curl "${curl_args[@]}" "$url" 2>"$curl_err")
+curl_status=$?
+http_code=${response##*$'\n'}
+body=${response%$'\n'*}
+
+if [[ $curl_status -ne 0 || ! $http_code =~ ^[0-9]{3}$ ]]; then
+  # curl never got as far as an HTTP status: DNS, TLS, no network, timeout.
+  detail=$(tr -d '\n' <"$curl_err" | sed 's/^curl: ([0-9]*) //')
+  fail "Could not reach CoinGecko${detail:+: $detail}"
+fi
+
+case $http_code in
+  200) ;;
+  429) fail "Rate limited by CoinGecko. Raise the refresh interval or add a Demo API key." ;;
+  401|403) fail "CoinGecko rejected the API key (HTTP $http_code)." ;;
+  *)
+    api_error=$(jq -r '.status.error_message // .error // empty' <<<"$body" 2>/dev/null | head -c 200)
+    if [[ $api_error == "invalid vs_currency" ]]; then
+      fail "CoinGecko does not know the currency \"$currency\"."
+    fi
+    fail "CoinGecko returned HTTP $http_code${api_error:+: $api_error}" ;;
+esac
+
+# An empty array is what CoinGecko returns for ids it does not know, and also
+# for a currency it does not support — the two are told apart in the widget by
+# `missing` covering every requested id.
+jq -c \
+  --arg currency "$currency" \
+  --argjson ids "$(printf '%s\n' "${ids[@]}" | jq -R . | jq -sc .)" \
+  --argjson now "$(date +%s)" '
+  if type != "array" then
+    {error: "CoinGecko returned something unexpected"}
+  else
+    (map({(.id): .}) | add // {}) as $byId
+    | {
+        currency: $currency,
+        fetchedAt: $now,
+        coins: [ $ids[] | $byId[.] // empty | {
+          id: .id,
+          symbol: (.symbol // "" | ascii_upcase),
+          name: (.name // .id),
+          rank: .market_cap_rank,
+          price: .current_price,
+          change1h: .price_change_percentage_1h_in_currency,
+          change24h: (.price_change_percentage_24h_in_currency // .price_change_percentage_24h),
+          change7d: .price_change_percentage_7d_in_currency,
+          high24h: .high_24h,
+          low24h: .low_24h,
+          marketCap: .market_cap,
+          volume24h: .total_volume,
+          ath: .ath,
+          athChange: .ath_change_percentage,
+          image: .image,
+          lastUpdated: .last_updated
+        } ],
+        missing: [ $ids[] | select($byId[.] == null) ]
+      }
+  end' <<<"$body" 2>/dev/null || fail "CoinGecko returned something unreadable"
