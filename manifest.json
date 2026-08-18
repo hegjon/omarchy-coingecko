@@ -33,6 +33,7 @@
       "coins": "bitcoin,ethereum",
       "currency": "USD",
       "barDisplay": "First coin",
+      "panelSort": "Market cap",
       "showChangeInBar": true,
       "compactPrices": true,
       "refreshIntervalSec": 120,
@@ -59,6 +60,14 @@
         "label": "What to show on the bar",
         "options": ["First coin", "All coins", "Icon only"],
         "defaultValue": "First coin"
+      },
+      {
+        "key": "panelSort",
+        "type": "enum",
+        "label": "Order of coins in the popup",
+        "description": "The bar always shows the first configured coin; this only orders the popup list.",
+        "options": ["Market cap", "Configured order", "24h change"],
+        "defaultValue": "Market cap"
       },
       {
         "key": "showChangeInBar",

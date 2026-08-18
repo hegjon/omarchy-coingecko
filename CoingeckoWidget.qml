@@ -49,6 +49,7 @@ Panel {
   readonly property string coinIds: String(setting("coins", "bitcoin,ethereum")).trim()
   readonly property string currencySetting: String(setting("currency", "USD")).trim().toLowerCase()
   readonly property string barDisplay: String(setting("barDisplay", "First coin"))
+  readonly property string panelSort: String(setting("panelSort", "Market cap"))
   readonly property bool showChangeInBar: boolSetting("showChangeInBar", true)
   readonly property bool compactPrices: boolSetting("compactPrices", true)
   readonly property int refreshIntervalMs: intSetting("refreshIntervalSec", 120, 60, 3600) * 1000
@@ -205,6 +206,28 @@ Panel {
   readonly property bool dataIsStale: {
     if (lastUpdatedAt <= 0) return true
     return (nowMs - lastUpdatedAt) > refreshIntervalMs * 3
+  }
+
+  // The popup's order. `coins` itself stays in configured order because the
+  // bar shows its first entry, so the sort is a separate view of the same
+  // list. Coins the API gave no figure for sink to the bottom rather than
+  // sorting as zero.
+  readonly property var panelCoins: {
+    if (panelSort === "Configured order") return coins
+    var key = panelSort === "24h change"
+      ? function(c) { return c.change24h }
+      : function(c) { return c.marketCap }
+    var sorted = coins.slice()
+    sorted.sort(function(a, b) {
+      var ka = key(a), kb = key(b)
+      var aMissing = ka === null || ka === undefined || !isFinite(ka)
+      var bMissing = kb === null || kb === undefined || !isFinite(kb)
+      if (aMissing && bMissing) return 0
+      if (aMissing) return 1
+      if (bMissing) return -1
+      return kb - ka
+    })
+    return sorted
   }
 
   function tickerFor(coin) {
@@ -465,7 +488,7 @@ Panel {
         }
 
         Repeater {
-          model: root.coins
+          model: root.panelCoins
 
           CoinRow {
             id: coinEntry

@@ -5,8 +5,9 @@ Cryptocurrency prices from [CoinGecko](https://www.coingecko.com/) in the
 
 - A live ticker on the bar: `BTC $64.6k ▲0.5%` for your first coin, every
   coin you follow, or just an icon.
-- A popup with price, 1h / 24h / 7d change, market cap and rank for each coin.
-  Click a coin to open its CoinGecko page; press `R` to refresh.
+- A popup with price, 1h / 24h / 7d change, market cap and rank for each coin,
+  sorted by market cap (or configured order, or 24h change). Click a coin to
+  open its CoinGecko page; press `R` to refresh.
 - Any of CoinGecko's quote currencies (`USD` by default; `EUR`, `NOK`, `BTC`, …).
 - No account needed. An optional free Demo API key raises the rate limit.
 
@@ -37,6 +38,7 @@ omarchy bar set hegjon.coingecko showChangeInBar false --json
 | `coins`              | `bitcoin,ethereum` | Comma-separated CoinGecko ids. The first is the one on the bar.     |
 | `currency`           | `USD`              | Quote currency code, case-insensitive.                              |
 | `barDisplay`         | `First coin`       | `First coin`, `All coins` or `Icon only`.                           |
+| `panelSort`          | `Market cap`       | Popup order: `Market cap`, `Configured order` or `24h change`.      |
 | `showChangeInBar`    | `true`             | Append the 24h change to the ticker.                                |
 | `compactPrices`      | `true`             | `64.6k` instead of `64,568` on the bar. The popup is never compact. |
 | `refreshIntervalSec` | `120`              | Poll interval, 60–3600 s.                                           |
