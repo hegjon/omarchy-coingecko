@@ -52,7 +52,7 @@ Panel {
   readonly property string panelSort: String(setting("panelSort", "Market cap"))
   readonly property bool showChangeInBar: boolSetting("showChangeInBar", true)
   readonly property bool compactPrices: boolSetting("compactPrices", true)
-  readonly property int refreshIntervalMs: intSetting("refreshIntervalSec", 120, 60, 3600) * 1000
+  readonly property int refreshIntervalMs: intSetting("refreshIntervalSec", 300, 60, 3600) * 1000
   readonly property string apiKey: String(setting("apiKey", "")).trim()
 
   readonly property bool iconOnly: barDisplay === "Icon only"

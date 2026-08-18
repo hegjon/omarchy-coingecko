@@ -41,7 +41,7 @@ omarchy bar set hegjon.coingecko showChangeInBar false --json
 | `panelSort`          | `Market cap`       | Popup order: `Market cap`, `Configured order` or `24h change`.      |
 | `showChangeInBar`    | `true`             | Append the 24h change to the ticker.                                |
 | `compactPrices`      | `true`             | `64.6k` instead of `64,568` on the bar. The popup is never compact. |
-| `refreshIntervalSec` | `120`              | Poll interval, 60–3600 s.                                           |
+| `refreshIntervalSec` | `300`              | Poll interval, 60–3600 s.                                           |
 | `apiKey`             | *(empty)*          | CoinGecko Demo API key, sent as `x-cg-demo-api-key`.                |
 
 Coin ids are the slug in a coin's CoinGecko URL: `coingecko.com/en/coins/solana`
@@ -52,7 +52,7 @@ silently dropped.
 
 CoinGecko's public endpoint allows roughly 5–15 requests a minute per IP and
 serves prices cached for about a minute, so the widget polls no faster than
-every 60 s and defaults to 120 s. When CoinGecko answers 429, the popup says so
+every 60 s and defaults to 300 s. When CoinGecko answers 429, the popup says so
 and the last known prices stay on screen; a longer interval or a
 [free Demo key](https://www.coingecko.com/en/developers/dashboard) is the fix.
 
