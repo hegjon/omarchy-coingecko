@@ -20,7 +20,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 readonly API_BASE="https://api.coingecko.com/api/v3"
-readonly USER_AGENT="omarchy-coingecko/0.1.0 (+https://github.com/hegjon/omarchy-coingecko)"
+readonly USER_AGENT="omarchy-coingecko/0.2.0 (+https://github.com/hegjon/omarchy-coingecko)"
 
 coins="bitcoin,solana,monero,stellar,bitcoin-cash"
 currency="usd"

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "hegjon.coingecko",
   "name": "CoinGecko",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Jonny Heggheim",
   "license": "MIT",
   "description": "Cryptocurrency prices from CoinGecko in the Omarchy bar: a live ticker for your favourite coin plus a popup with price, 1h/24h/7d change, market cap and rank for every coin you follow.",
