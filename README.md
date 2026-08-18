@@ -3,6 +3,8 @@
 Cryptocurrency prices from [CoinGecko](https://www.coingecko.com/) in the
 [Omarchy](https://omarchy.org/) bar.
 
+![Bar ticker and popup](preview.png)
+
 - A live ticker on the bar: `BTC $64.6k ▲0.5%` for your first coin, every
   coin you follow, or just an icon.
 - A popup with price, 1h / 24h / 7d change, market cap and rank for each coin,

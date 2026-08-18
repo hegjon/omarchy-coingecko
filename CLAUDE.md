@@ -17,8 +17,11 @@ Omarchy bar-widget plugin. This checkout *is* the installed plugin
 - IPC: `omarchy-shell hegjon.coingecko open|close|toggle|refresh`.
 - Settings for experiments: `omarchy bar set hegjon.coingecko <key> <value>`
   (booleans need `--json`). Restore the defaults afterwards.
-- Screenshots: `grim -o HDMI-A-1` + `magick -crop` on the right of the
-  3840×2160 monitor (the panel is roughly `-crop 1200x700+2640+0`).
+- Screenshots: `grim -o HDMI-A-1` + `magick -crop` on the 3840×2160 monitor.
+  The widget sits in the center section, so the open panel is roughly
+  `-crop 720x744+1848+56` (probe the orange border with `%[pixel:p{x,y}]`).
+  `preview.png` is that panel plus the bar strip above it, with the clock
+  painted over in the bar colour `srgb(18,18,18)`.
 - Backend by hand: `./coingecko-fetch --coins bitcoin,ethereum --currency usd | jq .`
   A key goes in `COINGECKO_API_KEY=…`, never argv.
 
