@@ -28,7 +28,7 @@
     "description": "Crypto price ticker and market overview from CoinGecko",
     "category": "Information",
     "allowMultiple": true,
-    "defaultSection": "right",
+    "defaultSection": "center",
     "defaults": {
       "coins": "bitcoin,ethereum",
       "currency": "USD",
