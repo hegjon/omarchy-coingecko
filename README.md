@@ -7,7 +7,7 @@ Cryptocurrency prices from [CoinGecko](https://www.coingecko.com/) in the
   coin you follow, or just an icon.
 - A popup with price, 1h / 24h / 7d change, market cap and rank for each coin.
   Click a coin to open its CoinGecko page; press `R` to refresh.
-- Any of CoinGecko's quote currencies (`usd`, `eur`, `nok`, `btc`, …).
+- Any of CoinGecko's quote currencies (`USD` by default; `EUR`, `NOK`, `BTC`, …).
 - No account needed. An optional free Demo API key raises the rate limit.
 
 ## Install
@@ -27,7 +27,7 @@ Change them from the bar's widget settings, or with `omarchy bar set`:
 
 ```bash
 omarchy bar set hegjon.coingecko coins "bitcoin,ethereum,solana"
-omarchy bar set hegjon.coingecko currency eur
+omarchy bar set hegjon.coingecko currency EUR
 omarchy bar set hegjon.coingecko barDisplay "All coins"
 omarchy bar set hegjon.coingecko showChangeInBar false --json
 ```
@@ -35,7 +35,7 @@ omarchy bar set hegjon.coingecko showChangeInBar false --json
 | Key                  | Default            | Meaning                                                             |
 |----------------------|--------------------|---------------------------------------------------------------------|
 | `coins`              | `bitcoin,ethereum` | Comma-separated CoinGecko ids. The first is the one on the bar.     |
-| `currency`           | `usd`              | Quote currency code.                                                |
+| `currency`           | `USD`              | Quote currency code, case-insensitive.                              |
 | `barDisplay`         | `First coin`       | `First coin`, `All coins` or `Icon only`.                           |
 | `showChangeInBar`    | `true`             | Append the 24h change to the ticker.                                |
 | `compactPrices`      | `true`             | `64.6k` instead of `64,568` on the bar. The popup is never compact. |

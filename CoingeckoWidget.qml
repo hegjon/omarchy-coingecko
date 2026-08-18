@@ -47,7 +47,7 @@ Panel {
   }
 
   readonly property string coinIds: String(setting("coins", "bitcoin,ethereum")).trim()
-  readonly property string currencySetting: String(setting("currency", "usd")).trim().toLowerCase()
+  readonly property string currencySetting: String(setting("currency", "USD")).trim().toLowerCase()
   readonly property string barDisplay: String(setting("barDisplay", "First coin"))
   readonly property bool showChangeInBar: boolSetting("showChangeInBar", true)
   readonly property bool compactPrices: boolSetting("compactPrices", true)

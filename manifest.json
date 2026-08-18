@@ -31,7 +31,7 @@
     "defaultSection": "right",
     "defaults": {
       "coins": "bitcoin,ethereum",
-      "currency": "usd",
+      "currency": "USD",
       "barDisplay": "First coin",
       "showChangeInBar": true,
       "compactPrices": true,
@@ -50,8 +50,8 @@
         "key": "currency",
         "type": "string",
         "label": "Currency",
-        "description": "Quote currency code such as usd, eur, gbp, nok, jpy or btc.",
-        "defaultValue": "usd"
+        "description": "Quote currency code such as USD, EUR, GBP, NOK, JPY or BTC. Case does not matter.",
+        "defaultValue": "USD"
       },
       {
         "key": "barDisplay",
