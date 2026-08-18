@@ -22,7 +22,7 @@ readonly SCRIPT_DIR
 readonly API_BASE="https://api.coingecko.com/api/v3"
 readonly USER_AGENT="omarchy-coingecko/0.1.0 (+https://github.com/hegjon/omarchy-coingecko)"
 
-coins="bitcoin,ethereum"
+coins="bitcoin,solana,monero,stellar,bitcoin-cash"
 currency="usd"
 
 while (($#)); do

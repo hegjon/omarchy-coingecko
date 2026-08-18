@@ -30,7 +30,7 @@
     "allowMultiple": true,
     "defaultSection": "center",
     "defaults": {
-      "coins": "bitcoin,ethereum",
+      "coins": "bitcoin,solana,monero,stellar,bitcoin-cash",
       "currency": "USD",
       "barDisplay": "First coin",
       "panelSort": "Market cap",
@@ -45,7 +45,7 @@
         "type": "string",
         "label": "Coins to follow",
         "description": "Comma-separated CoinGecko coin ids, e.g. bitcoin,ethereum,solana. The first one is shown on the bar. Ids are in the URL of a coin's CoinGecko page.",
-        "defaultValue": "bitcoin,ethereum"
+        "defaultValue": "bitcoin,solana,monero,stellar,bitcoin-cash"
       },
       {
         "key": "currency",

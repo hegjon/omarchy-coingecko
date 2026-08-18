@@ -46,7 +46,7 @@ Panel {
     return Math.max(min, Math.min(max, value))
   }
 
-  readonly property string coinIds: String(setting("coins", "bitcoin,ethereum")).trim()
+  readonly property string coinIds: String(setting("coins", "bitcoin,solana,monero,stellar,bitcoin-cash")).trim()
   readonly property string currencySetting: String(setting("currency", "USD")).trim().toLowerCase()
   readonly property string barDisplay: String(setting("barDisplay", "First coin"))
   readonly property string panelSort: String(setting("panelSort", "Market cap"))

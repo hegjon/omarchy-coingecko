@@ -37,7 +37,7 @@ omarchy bar set hegjon.coingecko showChangeInBar false --json
 
 | Key                  | Default            | Meaning                                                             |
 |----------------------|--------------------|---------------------------------------------------------------------|
-| `coins`              | `bitcoin,ethereum` | Comma-separated CoinGecko ids. The first is the one on the bar.     |
+| `coins`              | `bitcoin,solana,monero,stellar,bitcoin-cash` | Comma-separated CoinGecko ids. The first is the one on the bar. |
 | `currency`           | `USD`              | Quote currency code, case-insensitive.                              |
 | `barDisplay`         | `First coin`       | `First coin`, `All coins` or `Icon only`.                           |
 | `panelSort`          | `Market cap`       | Popup order: `Market cap`, `Configured order` or `24h change`.      |
