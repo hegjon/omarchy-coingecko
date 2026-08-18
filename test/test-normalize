@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Exercise normalize.jq against captured and synthetic CoinGecko responses.
+# No API key and no network: everything here runs off fixtures.
+
+set -uo pipefail
+
+TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly TEST_DIR
+PLUGIN_DIR="$(dirname -- "$TEST_DIR")"
+readonly PLUGIN_DIR
+readonly NORMALIZE="$PLUGIN_DIR/normalize.jq"
+
+passed=0
+failed=0
+
+# check <name> <fixture> <ids-json> <filter>
+check() {
+  local name="$1" fixture="$2" ids="$3" filter="$4"
+  local out
+  if ! out=$(jq -f "$NORMALIZE" --arg currency usd --argjson ids "$ids" --argjson now 1700000000 \
+             <"$TEST_DIR/fixtures/$fixture" 2>&1); then
+    printf '  FAIL  %s\n        normalize.jq errored: %s\n' "$name" "$out"
+    (( failed++ ))
+    return
+  fi
+  if jq -e "$filter" >/dev/null 2>&1 <<<"$out"; then
+    printf '  ok    %s\n' "$name"
+    (( passed++ ))
+  else
+    printf '  FAIL  %s\n        expected: %s\n        got: %s\n' "$name" "$filter" "$out"
+    (( failed++ ))
+  fi
+}
+
+echo "normalize.jq"
+
+# --- captured markets response: bitcoin, ethereum, dogecoin ----------------
+readonly THREE='["dogecoin","bitcoin","ethereum"]'
+
+check "keeps every requested coin" markets.json "$THREE" \
+  '.coins | length == 3'
+check "keeps the requested order, not market-cap order" markets.json "$THREE" \
+  '[.coins[].id] == ["dogecoin","bitcoin","ethereum"]'
+check "upper-cases the symbol" markets.json "$THREE" \
+  '.coins[1].symbol == "BTC"'
+check "carries the display name" markets.json "$THREE" \
+  '.coins[1].name == "Bitcoin"'
+check "price is a number" markets.json "$THREE" \
+  '.coins[1].price | type == "number"'
+check "24h change comes from the per-currency field" markets.json "$THREE" \
+  '.coins[1].change24h | type == "number"'
+check "1h and 7d changes are present" markets.json "$THREE" \
+  '.coins[1] | (.change1h | type == "number") and (.change7d | type == "number")'
+check "market cap and rank are present" markets.json "$THREE" \
+  '.coins[1] | (.marketCap | type == "number") and (.rank == 1)'
+check "echoes the currency" markets.json "$THREE" \
+  '.currency == "usd"'
+check "stamps fetchedAt" markets.json "$THREE" \
+  '.fetchedAt == 1700000000'
+check "nothing is missing when every id is known" markets.json "$THREE" \
+  '.missing == []'
+
+# --- requested ids the API does not know -----------------------------------
+check "unknown ids are reported as missing" markets.json '["bitcoin","notacoin"]' \
+  '.missing == ["notacoin"] and (.coins | length == 1)'
+check "an unrequested coin in the response is ignored" markets.json '["bitcoin"]' \
+  '[.coins[].id] == ["bitcoin"]'
+
+# --- empty array: every id unknown ------------------------------------------
+check "an empty response leaves every id missing" empty.json '["bitcoin","ethereum"]' \
+  '.coins == [] and .missing == ["bitcoin","ethereum"]'
+
+# --- an error object instead of an array -----------------------------------
+check "a non-array body becomes an error" error-object.json '["bitcoin"]' \
+  '.error != null and (.coins == null)'
+
+echo
+printf '%d passed, %d failed\n' "$passed" "$failed"
+(( failed == 0 ))

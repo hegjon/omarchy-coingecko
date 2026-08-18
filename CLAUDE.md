@@ -5,8 +5,12 @@ Omarchy bar-widget plugin. This checkout *is* the installed plugin
 
 ## Verifying changes
 
-- `test/lint` (qmllint over `*.qml` and `components/*.qml`), `test/test-manifest`,
-  and `omarchy-plugin-validate .`.
+- `test/lint` (qmllint over `*.qml` and `components/*.qml`), `test/test-normalize`,
+  `test/test-manifest`, and `omarchy-plugin-validate .`. `shellcheck` is not
+  installed locally; CI runs it (`.github/workflows/ci.yml`), or use
+  `docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable --severity=warning <files>`.
+- `test/fixtures/markets.json` is a captured `/coins/markets` response for
+  bitcoin, ethereum, dogecoin; refresh it with the URL in `coingecko-fetch`.
 - The shell hot-reloads the plugin on file change. For a trustworthy check run
   `omarchy-restart-shell`, wait ~8 s, then read
   `journalctl --user --since "30 sec ago" | grep -i coingecko` for QML errors.

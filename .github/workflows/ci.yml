@@ -1,0 +1,59 @@
+name: CI
+
+# Everything here is hermetic: no API key, no network, no CoinGecko account.
+# The fixtures under test/fixtures/ stand in for live API responses.
+#
+# The QML is deliberately not linted here. test/lint needs qmllint plus the
+# Omarchy shell's own modules, which Quickshell aliases to the `qs.*` namespace
+# at runtime; without them qmllint fails at the imports and reports nothing
+# useful. QML checking stays local — run ./test/lint on an Omarchy machine.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate manifest
+        run: ./test/test-manifest
+
+      - name: Check Bash syntax
+        run: |
+          bash -n coingecko-fetch
+          bash -n test/test-normalize
+          bash -n test/test-manifest
+          bash -n test/lint
+
+      - name: ShellCheck
+        run: |
+          shellcheck --severity=warning \
+            coingecko-fetch \
+            test/test-normalize \
+            test/test-manifest \
+            test/lint
+
+      - name: Check normalize.jq parses
+        run: jq -n -f normalize.jq --arg currency usd --argjson ids '[]' --argjson now 0 >/dev/null
+
+      - name: Test response normalization
+        run: ./test/test-normalize

@@ -63,15 +63,18 @@ omarchy-shell hegjon.coingecko open|close|toggle|refresh
 ## How it works
 
 `coingecko-fetch` does the one HTTP request (`/coins/markets`) with `curl` and
-normalizes the answer with `jq`; the widget (`CoingeckoWidget.qml`) only ever
+normalizes the answer with `jq` (`normalize.jq`); the widget (`CoingeckoWidget.qml`) only ever
 runs that script and renders its JSON. The API key travels in the environment,
 never on the command line.
 
 ## Development
 
 `test/lint` runs `qmllint` with the shell's modules on the import path;
-`test/test-manifest` checks `manifest.json` against the shell's rules;
-`omarchy plugin validate .` is the authority on an Omarchy machine.
+`test/test-normalize` exercises `normalize.jq` against the fixtures under
+`test/fixtures/`; `test/test-manifest` checks `manifest.json` against the
+shell's rules, and `omarchy plugin validate .` is the authority on an Omarchy
+machine. CI (`.github/workflows/ci.yml`) runs the hermetic subset: manifest,
+shellcheck and normalization.
 
 ## License
 

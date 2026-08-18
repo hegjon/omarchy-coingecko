@@ -17,6 +17,8 @@
 
 set -uo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 readonly API_BASE="https://api.coingecko.com/api/v3"
 readonly USER_AGENT="omarchy-coingecko/0.1.0 (+https://github.com/hegjon/omarchy-coingecko)"
 
@@ -96,35 +98,8 @@ esac
 # An empty array is what CoinGecko returns for ids it does not know, and also
 # for a currency it does not support — the two are told apart in the widget by
 # `missing` covering every requested id.
-jq -c \
+jq -c -f "$SCRIPT_DIR/normalize.jq" \
   --arg currency "$currency" \
   --argjson ids "$(printf '%s\n' "${ids[@]}" | jq -R . | jq -sc .)" \
-  --argjson now "$(date +%s)" '
-  if type != "array" then
-    {error: "CoinGecko returned something unexpected"}
-  else
-    (map({(.id): .}) | add // {}) as $byId
-    | {
-        currency: $currency,
-        fetchedAt: $now,
-        coins: [ $ids[] | $byId[.] // empty | {
-          id: .id,
-          symbol: (.symbol // "" | ascii_upcase),
-          name: (.name // .id),
-          rank: .market_cap_rank,
-          price: .current_price,
-          change1h: .price_change_percentage_1h_in_currency,
-          change24h: (.price_change_percentage_24h_in_currency // .price_change_percentage_24h),
-          change7d: .price_change_percentage_7d_in_currency,
-          high24h: .high_24h,
-          low24h: .low_24h,
-          marketCap: .market_cap,
-          volume24h: .total_volume,
-          ath: .ath,
-          athChange: .ath_change_percentage,
-          image: .image,
-          lastUpdated: .last_updated
-        } ],
-        missing: [ $ids[] | select($byId[.] == null) ]
-      }
-  end' <<<"$body" 2>/dev/null || fail "CoinGecko returned something unreadable"
+  --argjson now "$(date +%s)" \
+  <<<"$body" 2>/dev/null || fail "CoinGecko returned something unreadable"
